@@ -36,9 +36,7 @@ class PostRepositoryImpl: PostRepository {
     }
 
     override fun likeById(id: Long) {
-        Request.Builder()
-            .url("${BASE_URL}/api/posts/$id/likes")
-            .build()
+
     }
 
     override fun save(post: Post) {
