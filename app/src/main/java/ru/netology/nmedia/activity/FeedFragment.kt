@@ -53,6 +53,8 @@ class FeedFragment : Fragment() {
             }
         })
         binding.list.adapter = adapter
+        binding.list.animation = null
+
         viewModel.data.observe(viewLifecycleOwner, { state ->
             adapter.submitList(state.posts)
             binding.progress.isVisible = state.loading
