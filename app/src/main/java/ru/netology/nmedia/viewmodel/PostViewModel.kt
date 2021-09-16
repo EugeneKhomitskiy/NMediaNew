@@ -7,6 +7,8 @@ import ru.netology.nmedia.model.FeedModel
 import ru.netology.nmedia.repository.*
 import ru.netology.nmedia.util.SingleLiveEvent
 import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.*
 import kotlin.concurrent.thread
 
 private val empty = Post(
@@ -71,7 +73,17 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun likeById(id: Long) {
-        thread { repository.likeById(id) }
+        thread {
+            repository.likeById(id)
+            loadPosts()
+        }
+    }
+
+    fun unlikeById(id: Long) {
+        thread {
+            repository.unlikeById(id)
+            loadPosts()
+        }
     }
 
     fun removeById(id: Long) {
