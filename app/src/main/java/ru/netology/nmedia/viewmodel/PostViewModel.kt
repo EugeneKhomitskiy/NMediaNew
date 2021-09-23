@@ -26,7 +26,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     private val _data = MutableLiveData(FeedModel())
     val data: LiveData<FeedModel>
         get() = _data
-    val edited = MutableLiveData(empty)
+    private val edited = MutableLiveData(empty)
     private val _postCreated = SingleLiveEvent<Unit>()
     val postCreated: LiveData<Unit>
         get() = _postCreated
@@ -100,6 +100,20 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
             } catch (e: IOException) {
                 _data.postValue(_data.value?.copy(posts = old))
             }
+        }
+    }
+
+    fun shareById(id: Long) {
+        thread {
+            repository.shareById(id)
+            loadPosts()
+        }
+    }
+
+    fun viewsById(id: Long) {
+        thread {
+            repository.viewsById(id)
+            loadPosts()
         }
     }
 }

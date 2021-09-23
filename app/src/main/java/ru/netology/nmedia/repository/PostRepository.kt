@@ -9,4 +9,6 @@ interface PostRepository {
     fun unlikeById(id: Long)
     fun save(post: Post)
     fun removeById(id: Long)
+    fun shareById(id: Long)
+    fun viewsById(id: Long)
 }

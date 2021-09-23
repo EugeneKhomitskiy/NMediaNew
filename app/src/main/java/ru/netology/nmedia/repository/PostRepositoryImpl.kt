@@ -18,7 +18,7 @@ class PostRepositoryImpl : PostRepository {
     private val typeToken = object : TypeToken<List<Post>>() {}
 
     companion object {
-        private const val BASE_URL = "http://192.168.1.35:9999"
+        private const val BASE_URL = "http://192.168.0.102:9999"
         private val jsonType = "application/json".toMediaType()
     }
 
@@ -45,6 +45,7 @@ class PostRepositoryImpl : PostRepository {
             .execute()
             .close()
     }
+
     override fun unlikeById(id: Long) {
         val request: Request = Request.Builder()
             .delete(gson.toJson(id).toRequestBody(jsonType))
@@ -71,6 +72,28 @@ class PostRepositoryImpl : PostRepository {
         val request: Request = Request.Builder()
             .delete()
             .url("${BASE_URL}/api/posts/$id")
+            .build()
+
+        client.newCall(request)
+            .execute()
+            .close()
+    }
+
+    override fun shareById(id: Long) {
+        val request: Request = Request.Builder()
+            .post(gson.toJson(id).toRequestBody(jsonType))
+            .url("${BASE_URL}/api/posts/$id/shares")
+            .build()
+
+        client.newCall(request)
+            .execute()
+            .close()
+    }
+
+    override fun viewsById(id: Long) {
+        val request: Request = Request.Builder()
+            .post(gson.toJson(id).toRequestBody(jsonType))
+            .url("${BASE_URL}/api/posts/$id/views")
             .build()
 
         client.newCall(request)

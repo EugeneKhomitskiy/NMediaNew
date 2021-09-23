@@ -15,6 +15,7 @@ interface OnInteractionListener {
     fun onEdit(post: Post) {}
     fun onRemove(post: Post) {}
     fun onShare(post: Post) {}
+    fun onViews(post: Post) {}
 }
 
 class PostsAdapter(
@@ -44,6 +45,8 @@ class PostViewHolder(
             // в адаптере
             like.isChecked = post.likedByMe
             like.text = "${post.likes}"
+            share.text = "${post.shares}"
+            views.text = "${post.views}"
 
             menu.setOnClickListener {
                 PopupMenu(it.context, it).apply {
@@ -71,6 +74,10 @@ class PostViewHolder(
 
             share.setOnClickListener {
                 onInteractionListener.onShare(post)
+            }
+
+            views.setOnClickListener {
+                onInteractionListener.onViews(post)
             }
         }
     }
