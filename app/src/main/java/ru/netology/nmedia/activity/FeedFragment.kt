@@ -28,12 +28,16 @@ class FeedFragment : Fragment() {
         val binding = FragmentFeedBinding.inflate(inflater, container, false)
 
         val adapter = PostsAdapter(object : OnInteractionListener {
+
             override fun onEdit(post: Post) {
                 viewModel.edit(post)
+                val bundle = Bundle().apply { putString("content", post.content) }
+                findNavController().navigate(R.id.action_feedFragment_to_newPostFragment, bundle)
             }
 
             override fun onLike(post: Post) {
-                if (!post.likedByMe) viewModel.likeById(post.id) else viewModel.unlikeById(post.id)
+                //if (!post.likedByMe) viewModel.likeById(post.id) else viewModel.unlikeById(post.id)
+                viewModel.likeById(post.id)
             }
 
             override fun onRemove(post: Post) {
