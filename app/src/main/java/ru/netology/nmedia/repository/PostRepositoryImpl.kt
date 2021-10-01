@@ -44,7 +44,7 @@ class PostRepositoryImpl : PostRepository {
             })
     }
 
-    override fun likeByIdAsync(id: Long, callback: PostRepository.GetByIdCallback) {
+    override fun likeByIdAsync(id: Long, callback: PostRepository.GetPostCallback) {
         val request: Request = Request.Builder()
             .post(gson.toJson(id).toRequestBody(jsonType))
             .url("${BASE_URL}/api/posts/$id/likes")
@@ -57,13 +57,13 @@ class PostRepositoryImpl : PostRepository {
                 }
 
                 override fun onResponse(call: Call, response: Response) {
-                    callback.onSuccess(id)
+                    callback.onSuccess(gson.fromJson(response.body?.string(), Post::class.java))
                 }
 
             })
     }
 
-    override fun unlikeByIdAsync(id: Long, callback: PostRepository.GetByIdCallback) {
+    override fun unlikeByIdAsync(id: Long, callback: PostRepository.GetPostCallback) {
         val request: Request = Request.Builder()
             .delete()
             .url("${BASE_URL}/api/posts/$id/likes")
@@ -76,13 +76,13 @@ class PostRepositoryImpl : PostRepository {
                 }
 
                 override fun onResponse(call: Call, response: Response) {
-                    callback.onSuccess(id)
+                    callback.onSuccess(gson.fromJson(response.body?.string(), Post::class.java))
                 }
 
             })
     }
 
-    override fun saveAsync(post: Post, callback: PostRepository.SaveCallback) {
+    override fun saveAsync(post: Post, callback: PostRepository.GetPostCallback) {
         val request: Request = Request.Builder()
             .post(gson.toJson(post).toRequestBody(jsonType))
             .url("${BASE_URL}/api/posts")
@@ -101,7 +101,7 @@ class PostRepositoryImpl : PostRepository {
             })
     }
 
-    override fun removeByIdAsync(id: Long, callback: PostRepository.GetByIdCallback) {
+    override fun removeByIdAsync(id: Long, callback: PostRepository.RemoveCallback) {
         val request: Request = Request.Builder()
             .delete()
             .url("${BASE_URL}/api/posts/$id")
@@ -120,7 +120,7 @@ class PostRepositoryImpl : PostRepository {
             })
     }
 
-    override fun shareByIdAsync(id: Long, callback: PostRepository.GetByIdCallback) {
+    override fun shareByIdAsync(id: Long, callback: PostRepository.GetPostCallback) {
         val request: Request = Request.Builder()
             .post(gson.toJson(id).toRequestBody(jsonType))
             .url("${BASE_URL}/api/posts/$id/shares")
@@ -132,13 +132,13 @@ class PostRepositoryImpl : PostRepository {
                 }
 
                 override fun onResponse(call: Call, response: Response) {
-                    callback.onSuccess(id)
+                    callback.onSuccess(gson.fromJson(response.body?.string(), Post::class.java))
                 }
 
             })
     }
 
-    override fun viewsByIdAsync(id: Long, callback: PostRepository.GetByIdCallback) {
+    override fun viewsByIdAsync(id: Long, callback: PostRepository.GetPostCallback) {
         val request: Request = Request.Builder()
             .post(gson.toJson(id).toRequestBody(jsonType))
             .url("${BASE_URL}/api/posts/$id/views")
@@ -150,7 +150,7 @@ class PostRepositoryImpl : PostRepository {
                 }
 
                 override fun onResponse(call: Call, response: Response) {
-                    callback.onSuccess(id)
+                    callback.onSuccess(gson.fromJson(response.body?.string(), Post::class.java))
                 }
 
             })
