@@ -28,7 +28,6 @@
         android:layout_width="@dimen/posts_avatar_size"
         android:layout_height="@dimen/posts_avatar_size"
         android:layout_marginBottom="@dimen/common_spacing"
-        android:src="@mipmap/ic_launcher"
         app:layout_constraintBottom_toTopOf="@id/upperBarrier"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

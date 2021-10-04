@@ -10,7 +10,6 @@ import ru.netology.nmedia.dto.Post
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
-
 class PostRepositoryImpl : PostRepository {
     private val client = OkHttpClient.Builder()
         .addInterceptor(HttpLoggingInterceptor().apply {
@@ -22,7 +21,7 @@ class PostRepositoryImpl : PostRepository {
     private val typeToken = object : TypeToken<List<Post>>() {}
 
     companion object {
-        private const val BASE_URL = "http://192.168.0.103:9999"
+        private const val BASE_URL = "http://192.168.1.103:9999"
         private val jsonType = "application/json".toMediaType()
     }
 
