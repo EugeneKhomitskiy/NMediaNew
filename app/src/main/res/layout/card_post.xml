@@ -7,21 +7,16 @@
     android:padding="@dimen/common_spacing"
     tools:context=".activity.FeedFragment">
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/video"
-        style="@style/Theme.NMedia.MaterialButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/common_spacing"
-        android:layout_marginBottom="@dimen/common_spacing"
-        android:visibility="gone"
-        app:icon="@drawable/ic_baseline_play_arrow_24"
-        app:iconGravity="textStart"
+    <ImageView
+        android:id="@+id/imageAttachment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="matrix"
         app:layout_constraintBottom_toTopOf="@id/lowerBarrier"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/content"
-        tools:ignore="MissingConstraints,SpeakableTextPresentCheck" />
+        tools:ignore="ContentDescription" />
 
     <ImageView
         android:id="@+id/avatar"
