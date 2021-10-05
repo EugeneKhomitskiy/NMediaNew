@@ -51,8 +51,6 @@ class PostViewHolder(
             // в адаптере
             like.isChecked = post.likedByMe
             like.text = "${post.likes}"
-            share.text = "${post.shares}"
-            views.text = "${post.views}"
             imageAttachment.visibility = if (post.attachment != null) View.VISIBLE else View.GONE
 
             Glide.with(avatar)
