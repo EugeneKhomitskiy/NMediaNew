@@ -14,6 +14,8 @@ import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.enumeration.AttachmentType
 
+private const val BASE_URL = "http://192.168.1.103:9999"
+
 interface OnInteractionListener {
     fun onLike(post: Post) {}
     fun onEdit(post: Post) {}
@@ -54,7 +56,7 @@ class PostViewHolder(
             imageAttachment.visibility = if (post.attachment != null) View.VISIBLE else View.GONE
 
             Glide.with(avatar)
-                .load("http://192.168.1.103:9999/avatars/${post.authorAvatar}")
+                .load("${BASE_URL}/avatars/${post.authorAvatar}")
                 .transform(CircleCrop())
                 .placeholder(R.drawable.ic_loading_100dp)
                 .error(R.drawable.ic_error_100dp)
@@ -65,7 +67,7 @@ class PostViewHolder(
                 when (AttachmentType.values().first()) {
                     AttachmentType.IMAGE -> {
                         Glide.with(imageAttachment)
-                            .load("http://192.168.1.103:9999/images/${this.url}")
+                            .load("${BASE_URL}/images/${this.url}")
                             .placeholder(R.drawable.ic_loading_100dp)
                             .error(R.drawable.ic_error_100dp)
                             .timeout(10_000)
