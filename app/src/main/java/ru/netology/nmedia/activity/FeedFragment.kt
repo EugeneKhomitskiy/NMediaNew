@@ -38,7 +38,6 @@ class FeedFragment : Fragment() {
 
             override fun onLike(post: Post) {
                 if (!post.likedByMe) viewModel.likeById(post.id) else viewModel.unlikeById(post.id)
-                //viewModel.likeById(post.id)
             }
 
             override fun onRemove(post: Post) {
@@ -61,7 +60,10 @@ class FeedFragment : Fragment() {
         binding.list.animation = null
 
         viewModel.data.observe(viewLifecycleOwner, { state ->
-            adapter.submitList(state.posts)
+            val addingNewPost = adapter.itemCount > 0 && adapter.itemCount < state.posts.size
+            adapter.submitList(state.posts) {
+                if (addingNewPost) binding.list.smoothScrollToPosition(0)
+            }
             binding.emptyText.isVisible = state.empty
         })
 
@@ -69,7 +71,8 @@ class FeedFragment : Fragment() {
             binding.progress.isVisible = state.loading
             binding.swipeRefresh.isRefreshing = state.refreshing
             if (state.error) {
-                Snackbar.make(binding.root, R.string.error_loading, Snackbar.LENGTH_LONG).show()
+                Snackbar.make(binding.root, R.string.error_loading, Snackbar.LENGTH_LONG)
+                    .show()
             }
         }
 
