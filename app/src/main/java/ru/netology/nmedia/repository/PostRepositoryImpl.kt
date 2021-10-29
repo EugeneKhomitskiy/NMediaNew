@@ -19,6 +19,7 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
 
     override suspend fun getAllAsync() {
         try {
+            dao.getAll()
             val response = PostApi.retrofitService.getAll()
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
@@ -34,11 +35,11 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
 
     override suspend fun removeByIdAsync(id: Long) {
         try {
+            dao.removeById(id)
             val response = PostApi.retrofitService.removeById(id)
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }
-            dao.removeById(id)
         } catch (e: IOException) {
             throw NetworkError()
         } catch (e: Exception) {
@@ -48,6 +49,7 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
 
     override suspend fun saveAsync(post: Post) {
         try {
+            dao.save(PostEntity.fromDto(post))
             val response = PostApi.retrofitService.save(post)
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
@@ -63,12 +65,12 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
 
     override suspend fun likeByIdAsync(id: Long) {
         try {
+            dao.likeById(id)
             val response = PostApi.retrofitService.likeById(id)
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }
             val data = response.body() ?: throw ApiError(response.code(), response.message())
-            dao.likeById(id)
             dao.insert(PostEntity.fromDto(data))
         } catch (e: IOException) {
             throw NetworkError()
@@ -79,12 +81,12 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
 
     override suspend fun unlikeByIdAsync(id: Long) {
         try {
+            dao.likeById(id)
             val response = PostApi.retrofitService.unlikeById(id)
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }
             val data = response.body() ?: throw ApiError(response.code(), response.message())
-            dao.likeById(id)
             dao.insert(PostEntity.fromDto(data))
         } catch (e: IOException) {
             throw NetworkError()
