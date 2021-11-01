@@ -5,16 +5,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.snackbar.Snackbar
 import ru.netology.nmedia.R
 import ru.netology.nmedia.adapter.OnInteractionListener
 import ru.netology.nmedia.adapter.PostsAdapter
+import ru.netology.nmedia.api.PostApi
 import ru.netology.nmedia.databinding.FragmentFeedBinding
 import ru.netology.nmedia.dto.Post
+import ru.netology.nmedia.enumeration.RetryType
 import ru.netology.nmedia.viewmodel.PostViewModel
 
 class FeedFragment : Fragment() {
@@ -71,8 +73,24 @@ class FeedFragment : Fragment() {
             binding.progress.isVisible = state.loading
             binding.swipeRefresh.isRefreshing = state.refreshing
             if (state.error) {
-                Snackbar.make(binding.root, R.string.error_loading, Snackbar.LENGTH_LONG)
-                    .show()
+                with(binding.buttonRetry) {
+                    setOnClickListener {
+                        when (state.retryType) {
+                            RetryType.SAVE -> viewModel.retrySave(state.retryPost)
+                            RetryType.REMOVE -> viewModel.removeById(state.retryId)
+                            RetryType.LIKE -> viewModel.likeById(state.retryId)
+                            RetryType.UNLIKE -> viewModel.unlikeById(state.retryId)
+                            else -> viewModel.refreshPosts()
+                        }
+                        visibility = View.GONE
+                    }
+                    visibility = View.VISIBLE
+                }
+                Toast.makeText(
+                    activity,
+                    R.string.error_loading,
+                    Toast.LENGTH_SHORT,
+                ).show()
             }
         }
 

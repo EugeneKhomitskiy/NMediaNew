@@ -3,8 +3,12 @@ package ru.netology.nmedia.viewmodel
 import android.app.Application
 import androidx.lifecycle.*
 import kotlinx.coroutines.launch
+import ru.netology.nmedia.api.PostApi
+import ru.netology.nmedia.dao.PostDao
 import ru.netology.nmedia.db.AppDb
 import ru.netology.nmedia.dto.Post
+import ru.netology.nmedia.entity.PostEntity
+import ru.netology.nmedia.enumeration.RetryType
 import ru.netology.nmedia.model.FeedModel
 import ru.netology.nmedia.model.FeedModelState
 import ru.netology.nmedia.repository.*
@@ -40,6 +44,15 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         loadPosts()
     }
 
+    fun retrySave(post: Post?) {
+        viewModelScope.launch {
+            if (post != null) {
+                PostApi.retrofitService.save(post)
+                refreshPosts()
+            }
+        }
+    }
+
     fun loadPosts() = viewModelScope.launch {
         try {
             _dataState.value = FeedModelState(loading = true)
@@ -67,7 +80,8 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                     _postCreated.value = Unit
                     repository.saveAsync(it)
                 } catch (e: Exception) {
-                    _dataState.value = FeedModelState(error = true)
+                    _dataState.value =
+                        FeedModelState(error = true, retryType = RetryType.SAVE, retryPost = it)
                 }
             }
         }
@@ -90,7 +104,8 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         try {
             repository.likeByIdAsync(id)
         } catch (e: Exception) {
-            _dataState.value = FeedModelState(error = true)
+            _dataState.value =
+                FeedModelState(error = true, retryType = RetryType.LIKE, retryId = id)
         }
     }
 
@@ -98,7 +113,8 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         try {
             repository.unlikeByIdAsync(id)
         } catch (e: Exception) {
-            _dataState.value = FeedModelState(error = true)
+            _dataState.value =
+                FeedModelState(error = true, retryType = RetryType.UNLIKE, retryId = id)
         }
     }
 
@@ -106,7 +122,8 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         try {
             repository.removeByIdAsync(id)
         } catch (e: Exception) {
-            _dataState.value = FeedModelState(error = true)
+            _dataState.value =
+                FeedModelState(error = true, retryType = RetryType.REMOVE, retryId = id)
         }
     }
 }
