@@ -15,7 +15,8 @@ data class PostEntity(
     val likedByMe: Boolean,
     val likes: Int = 0,
     val shares: Int = 0,
-    val views: Int = 0
+    val views: Int = 0,
+    val viewed: Boolean = true
 ) {
 
     fun toDto() = Post(
@@ -28,7 +29,8 @@ data class PostEntity(
         likes,
         shares,
         views,
-        attachments = null
+        attachments = null,
+        viewed
     )
 
     companion object {
@@ -42,7 +44,8 @@ data class PostEntity(
                 post.likedByMe,
                 post.likes,
                 post.views,
-                post.shares
+                post.shares,
+                post.viewed
             )
     }
 }

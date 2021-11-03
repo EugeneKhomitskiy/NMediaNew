@@ -2,12 +2,12 @@ package ru.netology.nmedia.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.netology.nmedia.api.PostApi
-import ru.netology.nmedia.dao.PostDao
 import ru.netology.nmedia.db.AppDb
 import ru.netology.nmedia.dto.Post
-import ru.netology.nmedia.entity.PostEntity
 import ru.netology.nmedia.enumeration.RetryType
 import ru.netology.nmedia.model.FeedModel
 import ru.netology.nmedia.model.FeedModelState
@@ -29,9 +29,13 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     // упрощённый вариант
     private val repository: PostRepository =
         PostRepositoryImpl(AppDb.getInstance(application).postDao)
-    private val _data = repository.data.map { FeedModel(posts = it, empty = it.isEmpty()) }
-    val data: LiveData<FeedModel>
-        get() = _data
+    val data: LiveData<FeedModel> = repository.data
+        .map { FeedModel(posts = it, empty = it.isEmpty()) }
+        .asLiveData(Dispatchers.Default)
+    val newerCount: LiveData<Int> = data.switchMap {
+        repository.getNewerCount(it.posts.firstOrNull()?.id ?: 0).asLiveData(Dispatchers.Default)
+    }
+
     private val _dataState = MutableLiveData<FeedModelState>()
     val dataState: LiveData<FeedModelState>
         get() = _dataState
@@ -46,9 +50,14 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     fun retrySave(post: Post?) {
         viewModelScope.launch {
-            if (post != null) {
-                PostApi.retrofitService.save(post)
-                refreshPosts()
+            try {
+                if (post != null) {
+                    PostApi.retrofitService.save(post)
+                    refreshPosts()
+                }
+            } catch (e: Exception) {
+                _dataState.value =
+                    FeedModelState(error = true, retryType = RetryType.SAVE, retryPost = post)
             }
         }
     }
