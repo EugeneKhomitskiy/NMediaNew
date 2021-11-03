@@ -99,7 +99,7 @@ class FeedFragment : Fragment() {
         }
 
         binding.buttonNewPosts.setOnClickListener {
-            viewModel.loadPosts()
+            viewModel.loadNewPosts()
             binding.buttonNewPosts.visibility = View.GONE
         }
 

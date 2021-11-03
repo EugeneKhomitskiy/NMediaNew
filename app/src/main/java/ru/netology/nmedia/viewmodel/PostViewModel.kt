@@ -3,6 +3,7 @@ package ru.netology.nmedia.viewmodel
 import android.app.Application
 import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.netology.nmedia.api.PostApi
@@ -33,7 +34,9 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         .map { FeedModel(posts = it, empty = it.isEmpty()) }
         .asLiveData(Dispatchers.Default)
     val newerCount: LiveData<Int> = data.switchMap {
-        repository.getNewerCount(it.posts.firstOrNull()?.id ?: 0).asLiveData(Dispatchers.Default)
+        repository.getNewerCount(it.posts.firstOrNull()?.id ?: 0)
+            .catch { e -> e.printStackTrace() }
+            .asLiveData(Dispatchers.Default)
     }
 
     private val _dataState = MutableLiveData<FeedModelState>()
@@ -66,6 +69,16 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         try {
             _dataState.value = FeedModelState(loading = true)
             repository.getAllAsync()
+            _dataState.value = FeedModelState()
+        } catch (e: Exception) {
+            _dataState.value = FeedModelState(error = true)
+        }
+    }
+
+    fun loadNewPosts() = viewModelScope.launch {
+        try {
+            _dataState.value = FeedModelState(loading = true)
+            repository.getNewPosts()
             _dataState.value = FeedModelState()
         } catch (e: Exception) {
             _dataState.value = FeedModelState(error = true)
