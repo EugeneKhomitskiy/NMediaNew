@@ -12,7 +12,8 @@ data class Post(
     val likes: Int = 0,
     val shares: Int = 0,
     val views: Int = 0,
-    val attachments: Attachments?
+    val attachments: Attachments?,
+    val viewed: Boolean = true
 )
 
 data class Attachments(

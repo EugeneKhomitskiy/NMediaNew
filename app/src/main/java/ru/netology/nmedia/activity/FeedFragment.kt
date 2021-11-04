@@ -1,19 +1,20 @@
 package ru.netology.nmedia.activity
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
 import ru.netology.nmedia.R
+import ru.netology.nmedia.R.string.new_posts
 import ru.netology.nmedia.adapter.OnInteractionListener
 import ru.netology.nmedia.adapter.PostsAdapter
-import ru.netology.nmedia.api.PostApi
 import ru.netology.nmedia.databinding.FragmentFeedBinding
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.enumeration.RetryType
@@ -23,6 +24,7 @@ class FeedFragment : Fragment() {
 
     private val viewModel: PostViewModel by viewModels(ownerProducer = ::requireParentFragment)
 
+    @SuppressLint("SetTextI18n")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -73,8 +75,8 @@ class FeedFragment : Fragment() {
             binding.progress.isVisible = state.loading
             binding.swipeRefresh.isRefreshing = state.refreshing
             if (state.error) {
-                with(binding.buttonRetry) {
-                    setOnClickListener {
+                Snackbar.make(binding.root, R.string.error_loading, Snackbar.LENGTH_INDEFINITE)
+                    .setAction(R.string.retry_loading) {
                         when (state.retryType) {
                             RetryType.SAVE -> viewModel.retrySave(state.retryPost)
                             RetryType.REMOVE -> viewModel.removeById(state.retryId)
@@ -82,16 +84,23 @@ class FeedFragment : Fragment() {
                             RetryType.UNLIKE -> viewModel.unlikeById(state.retryId)
                             else -> viewModel.refreshPosts()
                         }
-                        visibility = View.GONE
                     }
+                    .show()
+            }
+        }
+
+        viewModel.newerCount.observe(viewLifecycleOwner) {
+            with(binding.buttonNewPosts) {
+                if (it > 0) {
+                    text = "${getString(new_posts)} $it"
                     visibility = View.VISIBLE
                 }
-                Toast.makeText(
-                    activity,
-                    R.string.error_loading,
-                    Toast.LENGTH_SHORT,
-                ).show()
             }
+        }
+
+        binding.buttonNewPosts.setOnClickListener {
+            viewModel.loadNewPosts()
+            binding.buttonNewPosts.visibility = View.GONE
         }
 
         binding.fab.setOnClickListener {
@@ -100,6 +109,7 @@ class FeedFragment : Fragment() {
 
         binding.swipeRefresh.setOnRefreshListener {
             viewModel.refreshPosts()
+            binding.buttonNewPosts.visibility = View.GONE
         }
         return binding.root
     }
