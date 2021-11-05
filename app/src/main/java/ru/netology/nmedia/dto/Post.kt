@@ -12,13 +12,12 @@ data class Post(
     val likes: Int = 0,
     val shares: Int = 0,
     val views: Int = 0,
-    val attachments: Attachments?,
+    val attachment: Attachment?,
     val viewed: Boolean = true
 )
 
-data class Attachments(
+data class Attachment(
     val url: String,
-    val description: String,
     val type: AttachmentType
 )
 

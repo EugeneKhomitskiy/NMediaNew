@@ -21,6 +21,7 @@
         <item name="android:paddingLeft">20dp</item>
         <item name="android:paddingRight">20dp</item>
         <item name="iconPadding">4dp</item>
+        <item name="cornerRadius">@dimen/common_spacing</item>
         <item name="android:backgroundTint">@android:color/background_light</item>
         <item name="minWidth">@dimen/min_size_button</item>
         <item name="minHeight">@dimen/min_size_button</item>
