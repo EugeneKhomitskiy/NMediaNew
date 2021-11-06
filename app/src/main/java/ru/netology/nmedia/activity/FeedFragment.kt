@@ -59,6 +59,11 @@ class FeedFragment : Fragment() {
                     Intent.createChooser(intent, getString(R.string.chooser_share_post))
                 startActivity(shareIntent)
             }
+
+            override fun openImage(post: Post) {
+                val bundle = Bundle().apply { putString("url", post.attachment?.url) }
+                findNavController().navigate(R.id.action_feedFragment_to_attachmentFragment, bundle)
+            }
         })
         binding.list.adapter = adapter
         binding.list.animation = null

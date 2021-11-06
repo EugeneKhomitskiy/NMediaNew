@@ -22,7 +22,7 @@ interface OnInteractionListener {
     fun onRemove(post: Post) {}
     fun onShare(post: Post) {}
     fun onViews(post: Post) {}
-
+    fun openImage(post: Post) {}
 }
 
 class PostsAdapter(
@@ -66,7 +66,7 @@ class PostViewHolder(
                 when (AttachmentType.values().first()) {
                     AttachmentType.IMAGE -> {
                         Glide.with(imageAttachment)
-                            .load("${BASE_URL}/images/${this.url}")
+                            .load("${BASE_URL}/media/${this.url}")
                             .placeholder(R.drawable.ic_loading_100dp)
                             .error(R.drawable.ic_error_100dp)
                             .timeout(10_000)
@@ -105,6 +105,10 @@ class PostViewHolder(
 
             views.setOnClickListener {
                 onInteractionListener.onViews(post)
+            }
+
+            imageAttachment.setOnClickListener {
+                onInteractionListener.openImage(post)
             }
         }
     }
