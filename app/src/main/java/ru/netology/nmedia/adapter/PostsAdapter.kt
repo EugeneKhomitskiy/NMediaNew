@@ -14,7 +14,7 @@ import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.enumeration.AttachmentType
 
-private const val BASE_URL = "http://192.168.0.102:9999"
+private const val BASE_URL = "http://192.168.1.103:9999"
 
 interface OnInteractionListener {
     fun onLike(post: Post) {}
@@ -22,6 +22,7 @@ interface OnInteractionListener {
     fun onRemove(post: Post) {}
     fun onShare(post: Post) {}
     fun onViews(post: Post) {}
+    fun openImage(post: Post) {}
 }
 
 class PostsAdapter(
@@ -51,7 +52,7 @@ class PostViewHolder(
             // в адаптере
             like.isChecked = post.likedByMe
             like.text = "${post.likes}"
-            imageAttachment.visibility = if (post.attachments != null) View.VISIBLE else View.GONE
+            imageAttachment.visibility = if (post.attachment != null) View.VISIBLE else View.GONE
 
             Glide.with(avatar)
                 .load("${BASE_URL}/avatars/${post.authorAvatar}")
@@ -61,11 +62,11 @@ class PostViewHolder(
                 .timeout(10_000)
                 .into(avatar)
 
-            post.attachments?.apply {
+            post.attachment?.apply {
                 when (AttachmentType.values().first()) {
                     AttachmentType.IMAGE -> {
                         Glide.with(imageAttachment)
-                            .load("${BASE_URL}/images/${this.url}")
+                            .load("${BASE_URL}/media/${this.url}")
                             .placeholder(R.drawable.ic_loading_100dp)
                             .error(R.drawable.ic_error_100dp)
                             .timeout(10_000)
@@ -104,6 +105,10 @@ class PostViewHolder(
 
             views.setOnClickListener {
                 onInteractionListener.onViews(post)
+            }
+
+            imageAttachment.setOnClickListener {
+                onInteractionListener.openImage(post)
             }
         }
     }
