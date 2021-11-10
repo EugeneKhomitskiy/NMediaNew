@@ -22,4 +22,7 @@
     <string name="channel_remote_description">Notifications from remote server</string>
     <string name="new_posts">New posts</string>
     <string name="description_photo">Photo</string>
+    <string name="sign_in">Sign In</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="sign_out">Sign Out</string>
 </resources>

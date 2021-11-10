@@ -23,4 +23,7 @@
     <string name="channel_remote_description">Уведомления с удалённого сервера</string>
     <string name="new_posts">Свежие записи</string>
     <string name="description_photo">Фото</string>
+    <string name="sign_in">Войти</string>
+    <string name="sign_up">Регистрация</string>
+    <string name="sign_out">Выйти</string>
 </resources>

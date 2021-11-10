@@ -14,7 +14,7 @@ import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.enumeration.AttachmentType
 
-private const val BASE_URL = "http://192.168.1.103:9999"
+private const val BASE_URL = "http://192.168.0.103:9999"
 
 interface OnInteractionListener {
     fun onLike(post: Post) {}
@@ -53,6 +53,7 @@ class PostViewHolder(
             like.isChecked = post.likedByMe
             like.text = "${post.likes}"
             imageAttachment.visibility = if (post.attachment != null) View.VISIBLE else View.GONE
+            menu.visibility = if (post.ownedByMe) View.VISIBLE else View.INVISIBLE
 
             Glide.with(avatar)
                 .load("${BASE_URL}/avatars/${post.authorAvatar}")
@@ -78,6 +79,8 @@ class PostViewHolder(
             menu.setOnClickListener {
                 PopupMenu(it.context, it).apply {
                     inflate(R.menu.options_post)
+                    // TODO: if we don't have other options, just remove dots
+                    menu.setGroupVisible(R.id.owned, post.ownedByMe)
                     setOnMenuItemClickListener { item ->
                         when (item.itemId) {
                             R.id.remove -> {
