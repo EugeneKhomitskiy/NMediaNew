@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -21,7 +20,7 @@ class SignInFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         val binding = FragmentSignInBinding.inflate(
             inflater,
             container,
@@ -29,7 +28,14 @@ class SignInFragment : Fragment() {
         )
 
         binding.buttonSignIn.setOnClickListener {
-            viewModel.updateUser(binding.textLogin.text.toString(),binding.textPassword.text.toString())
+            viewModel.updateUser(
+                binding.textFieldLogin.editText?.text.toString(),
+                binding.textFieldLogin.editText?.text.toString()
+            )
+        }
+
+        binding.textFieldPassword.setErrorIconOnClickListener {
+            binding.textFieldPassword.error = null
         }
 
         viewModel.data.observe(viewLifecycleOwner, {
@@ -39,14 +45,9 @@ class SignInFragment : Fragment() {
 
         viewModel.dataState.observe(viewLifecycleOwner) { state ->
             if (state.errorLogin) {
-                Toast.makeText(
-                    activity,
-                    R.string.error_login,
-                    Toast.LENGTH_SHORT
-                ).show()
+                binding.textFieldPassword.error = getString(R.string.error_login)
             }
         }
-
         return binding.root
     }
 }
