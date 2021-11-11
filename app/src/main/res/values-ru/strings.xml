@@ -26,4 +26,11 @@
     <string name="sign_in">Войти</string>
     <string name="sign_up">Регистрация</string>
     <string name="sign_out">Выйти</string>
+    <string name="login">Логин</string>
+    <string name="password">Пароль</string>
+    <string name="repeat_password">Повторите пароль</string>
+    <string name="user_name">Имя</string>
+    <string name="error_login">Неверный логин/пароль</string>
+    <string name="error_auth">Вы не авторизованы</string>
+    <string name="error_repeat_password">Пароли не совпадают</string>
 </resources>

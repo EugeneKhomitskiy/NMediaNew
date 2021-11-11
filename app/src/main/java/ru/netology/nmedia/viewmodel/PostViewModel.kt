@@ -54,6 +54,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                     )
                 }
         }.asLiveData(Dispatchers.Default)
+
     @ExperimentalCoroutinesApi
     val newerCount: LiveData<Int> = data.switchMap {
         repository.getNewerCount(it.posts.firstOrNull()?.id ?: 0)
