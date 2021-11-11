@@ -6,97 +6,65 @@
     android:layout_height="match_parent"
     tools:context=".activity.SignUpFragment">
 
-    <com.google.android.material.button.MaterialButton
+    <EditText
+        android:id="@+id/textLogin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:minHeight="48dp"
+        android:hint="@string/login"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/textPassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPassword"
+        android:minHeight="48dp"
+        android:hint="@string/password"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textLogin"
+        tools:ignore="SpeakableTextPresentCheck" />
+
+    <EditText
+        android:id="@+id/repeatTextPassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPassword"
+        android:minHeight="48dp"
+        android:hint="@string/repeat_password"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textPassword"
+        tools:ignore="SpeakableTextPresentCheck" />
+
+    <Button
         android:id="@+id/buttonSignUp"
-        style="@style/Theme.NMedia.MaterialButton"
-        android:backgroundTint="@color/blue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/sign_up"
-        android:layout_marginTop="@dimen/common_spacing"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textFieldRepeatPassword" />
+        app:layout_constraintTop_toBottomOf="@+id/repeatTextPassword" />
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textFieldName"
-        android:layout_width="match_parent"
-        android:layout_height="88dp"
+    <EditText
+        android:id="@+id/textName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:minHeight="48dp"
         android:hint="@string/user_name"
-        android:layout_marginTop="192dp"
-        android:layout_marginStart="@dimen/common_spacing"
-        android:layout_marginEnd="@dimen/common_spacing"
-        app:layout_constraintTop_toTopOf="parent"
-        app:boxStrokeColor="@color/blue"
-        tools:ignore="MissingConstraints"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textFieldLogin"
-        android:layout_width="match_parent"
-        android:layout_height="88dp"
-        android:hint="@string/login"
-        android:layout_marginStart="@dimen/common_spacing"
-        android:layout_marginEnd="@dimen/common_spacing"
-        app:layout_constraintTop_toBottomOf="@+id/textFieldName"
-        app:boxStrokeColor="@color/blue"
-        tools:ignore="MissingConstraints"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textFieldPassword"
-        android:layout_width="match_parent"
-        android:layout_height="88dp"
-        android:hint="@string/password"
-        app:endIconMode="password_toggle"
-        android:layout_marginStart="@dimen/common_spacing"
-        android:layout_marginEnd="@dimen/common_spacing"
-        app:layout_constraintTop_toBottomOf="@+id/textFieldLogin"
-        app:boxStrokeColor="@color/blue"
-        tools:ignore="MissingConstraints"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textPassword"
-            />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textFieldRepeatPassword"
-        android:layout_width="match_parent"
-        android:layout_height="88dp"
-        android:hint="@string/repeat_password"
-        app:endIconMode="password_toggle"
-        android:layout_marginStart="@dimen/common_spacing"
-        android:layout_marginEnd="@dimen/common_spacing"
-        app:layout_constraintTop_toBottomOf="@+id/textFieldPassword"
-        app:boxStrokeColor="@color/blue"
-        tools:ignore="MissingConstraints"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textPassword"
-            />
-
-    </com.google.android.material.textfield.TextInputLayout>
+        app:layout_constraintBottom_toTopOf="@+id/textLogin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

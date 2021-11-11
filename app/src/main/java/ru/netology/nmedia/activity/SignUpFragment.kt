@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -28,17 +29,15 @@ class SignUpFragment : Fragment() {
         )
 
         binding.buttonSignUp.setOnClickListener {
-            if (binding.textFieldPassword.editText?.text.toString() == binding.textFieldRepeatPassword.editText?.text.toString()) {
-                viewModel.registerUser(
-                    binding.textFieldLogin.editText?.text.toString(),
-                    binding.textFieldPassword.editText?.text.toString(),
-                    binding.textFieldName.editText?.text.toString()
-                )
-            } else binding.textFieldRepeatPassword.error = getString(R.string.error_repeat_password)
-        }
-
-        binding.textFieldRepeatPassword.setErrorIconOnClickListener {
-            binding.textFieldRepeatPassword.error = null
+            if (binding.textPassword.text.toString() == binding.repeatTextPassword.text.toString()) {
+                viewModel.registerUser(binding.textLogin.text.toString(), binding.textPassword.text.toString(), binding.textName.text.toString())
+            } else {
+                Toast.makeText(
+                    activity,
+                    R.string.error_repeat_password,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
 
         viewModel.data.observe(viewLifecycleOwner, {
