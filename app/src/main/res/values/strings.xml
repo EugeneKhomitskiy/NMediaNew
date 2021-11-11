@@ -22,4 +22,14 @@
     <string name="channel_remote_description">Notifications from remote server</string>
     <string name="new_posts">New posts</string>
     <string name="description_photo">Photo</string>
+    <string name="sign_in">Sign In</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="login">Login</string>
+    <string name="password">Password</string>
+    <string name="repeat_password">Repeat password</string>
+    <string name="user_name">Name</string>
+    <string name="error_login">Invalid username/password</string>
+    <string name="error_auth">You are not authorized</string>
+    <string name="error_repeat_password">Password mismatch</string>
 </resources>
