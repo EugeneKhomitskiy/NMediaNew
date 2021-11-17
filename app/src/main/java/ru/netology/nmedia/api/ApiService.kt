@@ -9,8 +9,10 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
 import ru.netology.nmedia.BuildConfig
 import ru.netology.nmedia.auth.AppAuth
+import ru.netology.nmedia.dto.Auth
 import ru.netology.nmedia.dto.Media
 import ru.netology.nmedia.dto.Post
+import ru.netology.nmedia.dto.PushToken
 
 private const val BASE_URL = "${BuildConfig.BASE_URL}/api/"
 
@@ -39,7 +41,7 @@ private val retrofit = Retrofit.Builder()
     .client(okhttp)
     .build()
 
-interface ApiPostService {
+interface ApiService {
     @GET("posts")
     suspend fun getAll(): Response<List<Post>>
 
@@ -64,10 +66,21 @@ interface ApiPostService {
     @Multipart
     @POST("media")
     suspend fun upload(@Part media: MultipartBody.Part): Response<Media>
+
+    @FormUrlEncoded
+    @POST("users/authentication")
+    suspend fun updateUser(@Field("login") login: String, @Field("pass") pass: String): Response<Auth>
+
+    @FormUrlEncoded
+    @POST("users/registration")
+    suspend fun registerUser(@Field("login") login: String, @Field("pass") pass: String, @Field("name") name: String): Response<Auth>
+
+    @POST("users/push-tokens")
+    suspend fun save(@Body pushToken: PushToken): Response<Unit>
 }
 
-object PostApi {
-    val retrofitService: ApiPostService by lazy {
-        retrofit.create(ApiPostService::class.java)
+object Api {
+    val retrofitService: ApiService by lazy {
+        retrofit.create(ApiService::class.java)
     }
 }
