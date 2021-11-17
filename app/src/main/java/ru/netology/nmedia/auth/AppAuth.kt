@@ -32,6 +32,7 @@ class AppAuth private constructor(context: Context) {
             _authStateFlow = MutableStateFlow(AuthState(id, token))
         }
         sendPushToken()
+        println("id = $id")
     }
 
     val authStateFlow: StateFlow<AuthState> = _authStateFlow.asStateFlow()
