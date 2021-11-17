@@ -2,7 +2,7 @@ package ru.netology.nmedia.viewmodel
 
 import androidx.lifecycle.*
 import kotlinx.coroutines.launch
-import ru.netology.nmedia.api.UserApi
+import ru.netology.nmedia.api.Api
 import ru.netology.nmedia.dto.Auth
 import ru.netology.nmedia.error.ApiError
 import ru.netology.nmedia.error.NetworkError
@@ -20,7 +20,7 @@ class SignInViewModel : ViewModel() {
     fun updateUser(name: String, pass: String) {
         viewModelScope.launch {
             try {
-                val response = UserApi.retrofitService.updateUser(name, pass)
+                val response = Api.retrofitService.updateUser(name, pass)
                 if (!response.isSuccessful) {
                     throw ApiError(response.message())
                 }
