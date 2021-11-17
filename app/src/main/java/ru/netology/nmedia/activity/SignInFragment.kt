@@ -30,7 +30,7 @@ class SignInFragment : Fragment() {
         binding.buttonSignIn.setOnClickListener {
             viewModel.updateUser(
                 binding.textFieldLogin.editText?.text.toString(),
-                binding.textFieldLogin.editText?.text.toString()
+                binding.textFieldPassword.editText?.text.toString()
             )
         }
 
