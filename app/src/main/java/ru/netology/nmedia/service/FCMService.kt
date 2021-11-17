@@ -10,11 +10,12 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.Gson
 import ru.netology.nmedia.R
+import ru.netology.nmedia.auth.AppAuth
+import ru.netology.nmedia.dto.Push
 import kotlin.random.Random
 
 
 class FCMService : FirebaseMessagingService() {
-    private val action = "action"
     private val content = "content"
     private val channelId = "remote"
     private val gson = Gson()
@@ -34,28 +35,29 @@ class FCMService : FirebaseMessagingService() {
     }
 
     override fun onMessageReceived(message: RemoteMessage) {
-
-        message.data[action]?.let {
-           when (Action.valueOf(it)) {
-              Action.LIKE -> handleLike(gson.fromJson(message.data[content], Like::class.java))
-           }
+        try {
+            val body = gson.fromJson(message.data[content], Push::class.java)
+            when (body.recipientId) {
+                AppAuth.getInstance().authStateFlow.value.id, null -> {
+                    handlePush(body)
+                }
+                else -> AppAuth.getInstance().sendPushToken()
+            }
+            println(message.data[content])
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
     override fun onNewToken(token: String) {
+        AppAuth.getInstance().sendPushToken(token)
         println(token)
     }
 
-    private fun handleLike(content: Like) {
+    private fun handlePush(push: Push) {
         val notification = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.drawable.ic_notification)
-            .setContentTitle(
-                getString(
-                    R.string.notification_user_liked,
-                    content.userName,
-                    content.postAuthor,
-                )
-            )
+            .setContentText(push.content)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .build()
 
@@ -63,15 +65,4 @@ class FCMService : FirebaseMessagingService() {
             .notify(Random.nextInt(100_000), notification)
     }
 }
-
-enum class Action {
-    LIKE,
-}
-
-data class Like(
-    val userId: Long,
-    val userName: String,
-    val postId: Long,
-    val postAuthor: String,
-)
 

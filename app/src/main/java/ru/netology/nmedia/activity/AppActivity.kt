@@ -59,17 +59,14 @@ class AppActivity : AppCompatActivity(R.layout.activity_app) {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.signin -> {
-                // TODO: just hardcode it, implementation must be in homework
                 findNavController(R.id.nav_host_fragment).navigate(R.id.action_feedFragment_to_signInFragment)
                 true
             }
             R.id.signup -> {
-                // TODO: just hardcode it, implementation must be in homework
                 findNavController(R.id.nav_host_fragment).navigate(R.id.action_feedFragment_to_signUpFragment)
                 true
             }
             R.id.signout -> {
-                // TODO: just hardcode it, implementation must be in homework
                 AppAuth.getInstance().removeAuth()
                 true
             }

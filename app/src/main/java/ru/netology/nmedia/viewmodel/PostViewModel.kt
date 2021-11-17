@@ -136,7 +136,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                     }
                     _dataState.value = FeedModelState()
                 } catch (e: Exception) {
-                    _dataState.value = FeedModelState(error = true)
+                    _dataState.value = FeedModelState(error = true, retryType = RetryType.SAVE, retryPost = it)
                 }
             }
         }
