@@ -25,8 +25,8 @@ data class PostEntity(
     fun toDto() = Post(
         id,
         authorId,
-        author,
         authorAvatar,
+        author,
         content,
         published,
         likedByMe,
