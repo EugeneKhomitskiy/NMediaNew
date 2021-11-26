@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 import ru.netology.nmedia.dto.Post
 
 @Entity
-data class PostEntity(
+data class PostWorkEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long,
     val authorId: Long,
@@ -20,7 +20,8 @@ data class PostEntity(
     val views: Int = 0,
     val viewed: Boolean = true,
     @Embedded
-    var attachment: AttachmentEmbeddable?
+    var attachment: AttachmentEmbeddable?,
+    var uri: String? = null,
 ) {
     fun toDto() = Post(
         id,
@@ -39,7 +40,7 @@ data class PostEntity(
 
     companion object {
         fun fromDto(post: Post) =
-            PostEntity(
+            PostWorkEntity(
                 post.id,
                 post.authorId,
                 post.authorAvatar,
@@ -55,6 +56,3 @@ data class PostEntity(
             )
     }
 }
-
-fun List<PostEntity>.toDto() = map(PostEntity::toDto)
-fun List<Post>.toEntity() = map(PostEntity::fromDto)

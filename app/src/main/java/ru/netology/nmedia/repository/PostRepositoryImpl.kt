@@ -1,5 +1,8 @@
 package ru.netology.nmedia.repository
 
+import android.net.Uri
+import androidx.core.net.toFile
+import androidx.core.net.toUri
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
@@ -7,11 +10,13 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import ru.netology.nmedia.api.Api
 import ru.netology.nmedia.dao.PostDao
+import ru.netology.nmedia.dao.PostWorkDao
 import ru.netology.nmedia.dto.Attachment
 import ru.netology.nmedia.dto.Media
 import ru.netology.nmedia.dto.MediaUpload
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.entity.PostEntity
+import ru.netology.nmedia.entity.PostWorkEntity
 import ru.netology.nmedia.entity.toDto
 import ru.netology.nmedia.entity.toEntity
 import ru.netology.nmedia.enumeration.AttachmentType
@@ -21,7 +26,7 @@ import ru.netology.nmedia.error.NetworkError
 import java.io.IOException
 import java.lang.Exception
 
-class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
+class PostRepositoryImpl(private val dao: PostDao, private val workDao: PostWorkDao) : PostRepository {
 
     override val data: Flow<List<Post>> = dao.getAll()
         .map { it.toDto() }
@@ -163,6 +168,31 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
             return response.body() ?: throw ApiError(response.message())
         } catch (e: IOException) {
             throw NetworkError
+        } catch (e: Exception) {
+            throw UnknownError()
+        }
+    }
+
+    override suspend fun saveWork(post: Post, upload: MediaUpload?): Long {
+        try {
+            val entity = PostWorkEntity.fromDto(post).apply {
+                if (upload != null) {
+                    this.uri = upload.file.toUri().toString()
+                }
+            }
+            return workDao.insert(entity)
+        } catch (e: Exception) {
+            throw UnknownError()
+        }
+    }
+
+    override suspend fun processWork(id: Long) {
+        try {
+            val entity = workDao.getById(id)
+            if (entity.uri != null) {
+                val upload = MediaUpload(Uri.parse(entity.uri).toFile())
+            }
+            println(entity.id)
         } catch (e: Exception) {
             throw UnknownError()
         }

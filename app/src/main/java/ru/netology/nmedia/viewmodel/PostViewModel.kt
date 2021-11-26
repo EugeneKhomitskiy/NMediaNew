@@ -2,7 +2,9 @@ package ru.netology.nmedia.viewmodel
 
 import android.app.Application
 import android.net.Uri
+import androidx.core.net.toFile
 import androidx.lifecycle.*
+import androidx.work.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.catch
@@ -20,6 +22,7 @@ import ru.netology.nmedia.model.FeedModelState
 import ru.netology.nmedia.model.PhotoModel
 import ru.netology.nmedia.repository.*
 import ru.netology.nmedia.util.SingleLiveEvent
+import ru.netology.nmedia.work.SavePostWorker
 import java.io.File
 
 private val empty = Post(
@@ -36,12 +39,17 @@ private val empty = Post(
 
 private val noPhoto = PhotoModel()
 
-
 class PostViewModel(application: Application) : AndroidViewModel(application) {
-    // упрощённый вариант
 
     private val repository: PostRepository =
-        PostRepositoryImpl(AppDb.getInstance(context = application).postDao)
+        PostRepositoryImpl(
+            AppDb.getInstance(context = application).postDao,
+            AppDb.getInstance(context = application).postWorkDao()
+        )
+
+    private val workManager: WorkManager =
+        WorkManager.getInstance(application)
+
     @ExperimentalCoroutinesApi
     val data: LiveData<FeedModel> = AppAuth.getInstance()
         .authStateFlow
@@ -122,21 +130,28 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-
     fun save() {
         edited.value?.let {
             _postCreated.value = Unit
             viewModelScope.launch {
                 try {
-                    when(_photo.value) {
-                        noPhoto -> repository.saveAsync(it)
-                        else -> _photo.value?.file?.let { file ->
-                            repository.saveWithAttachment(it, MediaUpload(file))
-                        }
-                    }
+                    val id = repository.saveWork(
+                        it, _photo.value?.uri?.let { MediaUpload(it.toFile()) }
+                    )
+                    val data = workDataOf(SavePostWorker.postKey to id)
+                    val constraints = Constraints.Builder()
+                        .setRequiredNetworkType(NetworkType.CONNECTED)
+                        .build()
+                    val request = OneTimeWorkRequestBuilder<SavePostWorker>()
+                        .setInputData(data)
+                        .setConstraints(constraints)
+                        .build()
+                    workManager.enqueue(request)
+
                     _dataState.value = FeedModelState()
                 } catch (e: Exception) {
-                    _dataState.value = FeedModelState(error = true, retryType = RetryType.SAVE, retryPost = it)
+                    e.printStackTrace()
+                    _dataState.value = FeedModelState(error = true)
                 }
             }
         }
