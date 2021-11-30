@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import ru.netology.nmedia.api.Api
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.db.AppDb
 import ru.netology.nmedia.dto.MediaUpload
@@ -22,6 +21,7 @@ import ru.netology.nmedia.model.FeedModelState
 import ru.netology.nmedia.model.PhotoModel
 import ru.netology.nmedia.repository.*
 import ru.netology.nmedia.util.SingleLiveEvent
+import ru.netology.nmedia.work.RemovePostWorker
 import ru.netology.nmedia.work.SavePostWorker
 import java.io.File
 
@@ -84,20 +84,6 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     init {
         loadPosts()
-    }
-
-    fun retrySave(post: Post?) {
-        viewModelScope.launch {
-            try {
-                if (post != null) {
-                    Api.retrofitService.save(post)
-                    refreshPosts()
-                }
-            } catch (e: Exception) {
-                _dataState.value =
-                    FeedModelState(error = true, retryType = RetryType.SAVE, retryPost = post)
-            }
-        }
     }
 
     fun loadPosts() = viewModelScope.launch {
@@ -195,10 +181,19 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     fun removeById(id: Long) = viewModelScope.launch {
         try {
-            repository.removeByIdAsync(id)
+            val data = workDataOf(RemovePostWorker.postKey to id)
+            val constraints = Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build()
+            val request = OneTimeWorkRequestBuilder<RemovePostWorker>()
+                .setInputData(data)
+                .setConstraints(constraints)
+                .build()
+            workManager.enqueue(request)
+            _dataState.value = FeedModelState()
         } catch (e: Exception) {
-            _dataState.value =
-                FeedModelState(error = true, retryType = RetryType.REMOVE, retryId = id)
+            e.printStackTrace()
+            _dataState.value = FeedModelState(error = true)
         }
     }
 }

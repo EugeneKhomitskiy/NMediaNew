@@ -16,11 +16,9 @@ import ru.netology.nmedia.R
 import ru.netology.nmedia.R.string.new_posts
 import ru.netology.nmedia.adapter.OnInteractionListener
 import ru.netology.nmedia.adapter.PostsAdapter
-import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.databinding.FragmentFeedBinding
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.enumeration.RetryType
-import ru.netology.nmedia.model.FeedModelState
 import ru.netology.nmedia.viewmodel.AuthViewModel
 import ru.netology.nmedia.viewmodel.PostViewModel
 
@@ -97,8 +95,6 @@ class FeedFragment : Fragment() {
                 Snackbar.make(binding.root, R.string.error_loading, Snackbar.LENGTH_INDEFINITE)
                     .setAction(R.string.retry_loading) {
                         when (state.retryType) {
-                            RetryType.SAVE -> viewModel.retrySave(state.retryPost)
-                            RetryType.REMOVE -> viewModel.removeById(state.retryId)
                             RetryType.LIKE -> viewModel.likeById(state.retryId)
                             RetryType.UNLIKE -> viewModel.unlikeById(state.retryId)
                             else -> viewModel.refreshPosts()

@@ -26,7 +26,8 @@ import ru.netology.nmedia.error.NetworkError
 import java.io.IOException
 import java.lang.Exception
 
-class PostRepositoryImpl(private val dao: PostDao, private val workDao: PostWorkDao) : PostRepository {
+class PostRepositoryImpl(private val dao: PostDao, private val workDao: PostWorkDao) :
+    PostRepository {
 
     override val data: Flow<List<Post>> = dao.getAll()
         .map { it.toDto() }
@@ -142,8 +143,8 @@ class PostRepositoryImpl(private val dao: PostDao, private val workDao: PostWork
     override suspend fun saveWithAttachment(post: Post, upload: MediaUpload) {
         try {
             val media = upload(upload)
-            // TODO: add support for other types
-            val postWithAttachment = post.copy(attachment = Attachment(media.id, AttachmentType.IMAGE))
+            val postWithAttachment =
+                post.copy(attachment = Attachment(media.id, AttachmentType.IMAGE))
             saveAsync(postWithAttachment)
         } catch (e: AppError) {
             throw e
@@ -191,8 +192,9 @@ class PostRepositoryImpl(private val dao: PostDao, private val workDao: PostWork
             val entity = workDao.getById(id)
             if (entity.uri != null) {
                 val upload = MediaUpload(Uri.parse(entity.uri).toFile())
-            }
-            println(entity.id)
+                saveWithAttachment(entity.toDto(), upload)
+            } else saveAsync(entity.toDto())
+            workDao.removeById(id)
         } catch (e: Exception) {
             throw UnknownError()
         }
