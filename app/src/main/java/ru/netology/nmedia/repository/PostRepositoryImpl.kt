@@ -144,7 +144,7 @@ class PostRepositoryImpl(private val dao: PostDao, private val workDao: PostWork
         try {
             val media = upload(upload)
             val postWithAttachment =
-                post.copy(attachment = Attachment(media.id, AttachmentType.IMAGE))
+                post.copy(attachment = Attachment(media.id, "", AttachmentType.IMAGE))
             saveAsync(postWithAttachment)
         } catch (e: AppError) {
             throw e
