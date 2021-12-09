@@ -1,15 +1,20 @@
 package ru.netology.nmedia.viewmodel
 
 import androidx.lifecycle.*
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import ru.netology.nmedia.api.Api
+import ru.netology.nmedia.api.ApiService
 import ru.netology.nmedia.dto.Auth
 import ru.netology.nmedia.error.ApiError
 import ru.netology.nmedia.error.NetworkError
 import ru.netology.nmedia.model.FeedModelState
 import java.io.IOException
+import javax.inject.Inject
 
-class SignInViewModel : ViewModel() {
+@HiltViewModel
+class SignInViewModel @Inject constructor(
+    private val apiService: ApiService
+) : ViewModel() {
 
     val data = MutableLiveData<Auth>()
 
@@ -20,7 +25,7 @@ class SignInViewModel : ViewModel() {
     fun updateUser(name: String, pass: String) {
         viewModelScope.launch {
             try {
-                val response = Api.retrofitService.updateUser(name, pass)
+                val response = apiService.updateUser(name, pass)
                 if (!response.isSuccessful) {
                     throw ApiError(response.message())
                 }

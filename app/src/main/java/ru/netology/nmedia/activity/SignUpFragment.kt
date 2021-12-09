@@ -7,12 +7,20 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import ru.netology.nmedia.R
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.databinding.FragmentSignUpBinding
 import ru.netology.nmedia.viewmodel.SignUpViewModel
+import javax.inject.Inject
 
+@ExperimentalCoroutinesApi
+@AndroidEntryPoint
 class SignUpFragment : Fragment() {
+
+    @Inject
+    lateinit var appAuth: AppAuth
 
     private val viewModel: SignUpViewModel by viewModels()
 
@@ -42,7 +50,7 @@ class SignUpFragment : Fragment() {
         }
 
         viewModel.data.observe(viewLifecycleOwner, {
-            AppAuth.getInstance().setAuth(it.id, it.token)
+            appAuth.setAuth(it.id, it.token)
             findNavController().navigateUp()
         })
 
