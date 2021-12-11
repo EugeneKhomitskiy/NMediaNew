@@ -1,4 +1,4 @@
-package ru.netology.nmedia.work
+package ru.netology.nmedia.di
 
 import android.content.Context
 import androidx.work.WorkManager
