@@ -5,13 +5,10 @@ import androidx.core.net.toFile
 import androidx.lifecycle.*
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import androidx.paging.map
 import androidx.work.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.dto.MediaUpload
@@ -45,21 +42,13 @@ private val noPhoto = PhotoModel()
 class PostViewModel @Inject constructor(
     private val repository: PostRepository,
     private val workManager: WorkManager,
-    appAuth: AppAuth
 ) : ViewModel() {
 
     private val cached = repository
         .data
         .cachedIn(viewModelScope)
 
-    val data: Flow<PagingData<Post>> = appAuth.authStateFlow
-        .flatMapLatest { (myId, _) ->
-            cached.map { pagingData ->
-                pagingData.map { post ->
-                    post.copy(ownedByMe = post.authorId == myId)
-                }
-            }
-        }
+    val data: Flow<PagingData<Post>> = cached
 
 /*    @ExperimentalCoroutinesApi
     val newerCount: LiveData<Int> = data.switchMap {

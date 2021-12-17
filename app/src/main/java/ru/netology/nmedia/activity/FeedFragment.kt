@@ -117,6 +117,8 @@ class FeedFragment : Fragment() {
             }
         }
 
+        viewModelAuth.data.observe(viewLifecycleOwner) { adapter.refresh() }
+
 /*        viewModel.newerCount.observe(viewLifecycleOwner) {
             with(binding.buttonNewPosts) {
                 if (it > 0) {
