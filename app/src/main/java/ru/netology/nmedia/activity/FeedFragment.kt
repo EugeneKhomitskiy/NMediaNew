@@ -17,6 +17,9 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChangedBy
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import ru.netology.nmedia.R
 import ru.netology.nmedia.adapter.OnInteractionListener
 import ru.netology.nmedia.adapter.PostsAdapter
@@ -88,6 +91,16 @@ class FeedFragment : Fragment() {
 
         lifecycleScope.launchWhenCreated {
             viewModel.data.collectLatest(adapter::submitData)
+        }
+
+        lifecycleScope.launch {
+            val shouldScrollToTop = adapter.loadStateFlow
+                .distinctUntilChangedBy { it.source.refresh }
+                .map { it.source.refresh is LoadState.NotLoading }
+
+            shouldScrollToTop.collectLatest { shouldScroll ->
+                if (shouldScroll) binding.list.scrollToPosition(0)
+            }
         }
 
         lifecycleScope.launchWhenCreated {
