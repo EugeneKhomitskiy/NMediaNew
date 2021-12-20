@@ -20,7 +20,8 @@ data class PostEntity(
     val views: Int = 0,
     val viewed: Boolean = true,
     @Embedded
-    var attachment: AttachmentEmbeddable?
+    var attachment: AttachmentEmbeddable?,
+    val ownedByMe: Boolean = false
 ) {
     fun toDto() = Post(
         id,
@@ -34,7 +35,8 @@ data class PostEntity(
         shares,
         views,
         attachment?.toDto(),
-        viewed
+        viewed,
+        ownedByMe
     )
 
     companion object {
@@ -51,7 +53,8 @@ data class PostEntity(
                 post.views,
                 post.shares,
                 post.viewed,
-                AttachmentEmbeddable.fromDto(post.attachment)
+                AttachmentEmbeddable.fromDto(post.attachment),
+                post.ownedByMe
             )
     }
 }

@@ -8,7 +8,7 @@ import ru.netology.nmedia.enumeration.AttachmentType
 
 @Dao
 interface PostDao {
-    @Query("""SELECT * FROM PostEntity WHERE viewed = 1 ORDER BY id DESC""")
+    @Query("""SELECT * FROM PostEntity ORDER BY id DESC""")
     fun getPagingSource(): PagingSource<Int, PostEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
