@@ -24,8 +24,12 @@ class PostRemoteMediator(
     ): MediatorResult {
         try {
             val response = when (loadType) {
-                LoadType.REFRESH -> service.getLatest(state.config.initialLoadSize)
+                LoadType.REFRESH -> postRemoteKeyDao.max()?.let {
+                    service.getAfter(it, state.config.pageSize)
+                } ?: service.getLatest(state.config.pageSize)
+
                 LoadType.PREPEND -> return MediatorResult.Success(false)
+
                 LoadType.APPEND -> {
                     val id = postRemoteKeyDao.min() ?: return MediatorResult.Success(false)
                     service.getBefore(id, state.config.pageSize)
@@ -41,23 +45,21 @@ class PostRemoteMediator(
                 when (loadType) {
                     LoadType.REFRESH -> {
                         postRemoteKeyDao.insert(
-                            listOf(
-                                PostRemoteKeyEntity(
-                                    PostRemoteKeyEntity.KeyType.AFTER,
-                                    body.first().id
-                                ),
+                            PostRemoteKeyEntity(
+                                PostRemoteKeyEntity.KeyType.AFTER,
+                                body.first().id
+                            )
+                        )
+                        if (postRemoteKeyDao.isEmpty()) {
+                            postRemoteKeyDao.insert(
                                 PostRemoteKeyEntity(
                                     PostRemoteKeyEntity.KeyType.BEFORE,
                                     body.last().id
                                 )
                             )
-                        )
-                        val maxId = postRemoteKeyDao.max() ?: return@withTransaction
-
-                        body.map {
-                            body.filter { it.id < maxId }
                         }
                     }
+
                     LoadType.APPEND -> {
                         postRemoteKeyDao.insert(
                             PostRemoteKeyEntity(
