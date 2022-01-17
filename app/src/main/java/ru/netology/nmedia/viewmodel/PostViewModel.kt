@@ -5,12 +5,16 @@ import androidx.core.net.toFile
 import androidx.lifecycle.*
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import androidx.paging.insertSeparators
 import androidx.work.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.netology.nmedia.auth.AppAuth
+import ru.netology.nmedia.dto.Ad
+import ru.netology.nmedia.dto.FeedItem
 import ru.netology.nmedia.dto.MediaUpload
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.enumeration.RetryType
@@ -22,6 +26,7 @@ import ru.netology.nmedia.work.RemovePostWorker
 import ru.netology.nmedia.work.SavePostWorker
 import java.io.File
 import javax.inject.Inject
+import kotlin.random.Random
 
 private val empty = Post(
     id = 0,
@@ -48,7 +53,15 @@ class PostViewModel @Inject constructor(
         .data
         .cachedIn(viewModelScope)
 
-    val data: Flow<PagingData<Post>> = cached
+    val data: Flow<PagingData<FeedItem>> = cached.map {
+        it.insertSeparators { previous, _ ->
+            if (previous?.id?.rem(5) == 0L) {
+                Ad(Random.nextLong(), "figma.jpg")
+            } else {
+                null
+            }
+        }
+    }
 
 /*    @ExperimentalCoroutinesApi
     val newerCount: LiveData<Int> = data.switchMap {

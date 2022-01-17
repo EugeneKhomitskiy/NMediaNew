@@ -7,25 +7,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
-import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.distinctUntilChangedBy
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import ru.netology.nmedia.R
+import ru.netology.nmedia.adapter.FeedAdapter
 import ru.netology.nmedia.adapter.OnInteractionListener
-import ru.netology.nmedia.adapter.PostsAdapter
+import ru.netology.nmedia.adapter.PostLoadStateAdapter
 import ru.netology.nmedia.databinding.FragmentFeedBinding
 import ru.netology.nmedia.dto.Post
-import ru.netology.nmedia.enumeration.RetryType
 import ru.netology.nmedia.viewmodel.AuthViewModel
 import ru.netology.nmedia.viewmodel.PostViewModel
 
@@ -45,7 +40,7 @@ class FeedFragment : Fragment() {
     ): View {
         val binding = FragmentFeedBinding.inflate(inflater, container, false)
 
-        val adapter = PostsAdapter(object : OnInteractionListener {
+        val adapter = FeedAdapter(object : OnInteractionListener {
 
             override fun onEdit(post: Post) {
                 viewModel.edit(post)
@@ -86,14 +81,21 @@ class FeedFragment : Fragment() {
                 findNavController().navigate(R.id.action_feedFragment_to_attachmentFragment, bundle)
             }
         })
-        binding.list.adapter = adapter
+        binding.list.adapter = adapter.withLoadStateHeaderAndFooter(
+            header = PostLoadStateAdapter {
+                adapter.retry()
+            },
+            footer = PostLoadStateAdapter {
+                adapter.retry()
+            }
+        )
         binding.list.animation = null
 
         lifecycleScope.launchWhenCreated {
             viewModel.data.collectLatest(adapter::submitData)
         }
 
-        lifecycleScope.launch {
+      /*  lifecycleScope.launch {
             val shouldScrollToTop = adapter.loadStateFlow
                 .distinctUntilChangedBy { it.source.refresh }
                 .map { it.source.refresh is LoadState.NotLoading }
@@ -101,20 +103,18 @@ class FeedFragment : Fragment() {
             shouldScrollToTop.collectLatest { shouldScroll ->
                 if (shouldScroll) binding.list.scrollToPosition(0)
             }
-        }
+        }*/
 
         lifecycleScope.launchWhenCreated {
             adapter.loadStateFlow.collectLatest { state ->
                 binding.swipeRefresh.isRefreshing =
-                    state.refresh is LoadState.Loading ||
-                            state.prepend is LoadState.Loading ||
-                            state.append is LoadState.Loading
+                    state.refresh is LoadState.Loading
             }
         }
 
         binding.swipeRefresh.setOnRefreshListener(adapter::refresh)
 
-        viewModel.dataState.observe(viewLifecycleOwner) { state ->
+     /*   viewModel.dataState.observe(viewLifecycleOwner) { state ->
             binding.progress.isVisible = state.loading
             binding.swipeRefresh.isRefreshing = state.refreshing
             if (state.error) {
@@ -128,7 +128,7 @@ class FeedFragment : Fragment() {
                     }
                     .show()
             }
-        }
+        }*/
 
         viewModelAuth.data.observe(viewLifecycleOwner) { adapter.refresh() }
 
