@@ -1,6 +1,8 @@
 package ru.netology.nmedia.viewmodel
 
 import android.net.Uri
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.core.net.toFile
 import androidx.lifecycle.*
 import androidx.paging.PagingData
@@ -12,11 +14,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import ru.netology.nmedia.auth.AppAuth
-import ru.netology.nmedia.dto.Ad
-import ru.netology.nmedia.dto.FeedItem
-import ru.netology.nmedia.dto.MediaUpload
-import ru.netology.nmedia.dto.Post
+import ru.netology.nmedia.dto.*
 import ru.netology.nmedia.enumeration.RetryType
 import ru.netology.nmedia.model.FeedModelState
 import ru.netology.nmedia.model.PhotoModel
@@ -25,6 +23,7 @@ import ru.netology.nmedia.util.SingleLiveEvent
 import ru.netology.nmedia.work.RemovePostWorker
 import ru.netology.nmedia.work.SavePostWorker
 import java.io.File
+import java.time.OffsetDateTime
 import javax.inject.Inject
 import kotlin.random.Random
 
@@ -36,11 +35,16 @@ private val empty = Post(
     author = "",
     likedByMe = false,
     likes = 0,
-    published = "",
+    published = 0,
     attachment = null
 )
 
 private val noPhoto = PhotoModel()
+
+@RequiresApi(Build.VERSION_CODES.O)
+private val currentTime = OffsetDateTime.now().toEpochSecond()
+private const val TODAY = 86400
+private const val YESTERDAY = 172800
 
 @ExperimentalCoroutinesApi
 @HiltViewModel
@@ -53,12 +57,25 @@ class PostViewModel @Inject constructor(
         .data
         .cachedIn(viewModelScope)
 
+    @RequiresApi(Build.VERSION_CODES.O)
     val data: Flow<PagingData<FeedItem>> = cached.map {
-        it.insertSeparators { previous, _ ->
-            if (previous?.id?.rem(5) == 0L) {
-                Ad(Random.nextLong(), "figma.jpg")
-            } else {
-                null
+        it.insertSeparators { previous, next ->
+            when {
+                previous?.id?.rem(5) == 0L -> {
+                    Ad(Random.nextLong(), "figma.jpg")
+                }
+                currentTime - next?.published!! < TODAY -> {
+                    Time(Random.nextLong(), "Today")
+                }
+                currentTime - next.published in (TODAY + 1) until YESTERDAY -> {
+                    Time(Random.nextLong(), "Yesterday")
+                }
+                currentTime - next.published > YESTERDAY -> {
+                    Time(Random.nextLong(), "Last week")
+                }
+                else -> {
+                    null
+                }
             }
         }
     }

@@ -12,7 +12,7 @@ data class Post(
     val authorAvatar: String,
     val author: String,
     val content: String,
-    val published: String,
+    val published: Long = 0,
     val likedByMe: Boolean,
     val likes: Int = 0,
     val shares: Int = 0,
@@ -25,6 +25,11 @@ data class Post(
 data class Ad(
     override val id: Long,
     val image: String,
+) : FeedItem
+
+data class Time(
+    override val id: Long,
+    val timeStr: String,
 ) : FeedItem
 
 data class Attachment(

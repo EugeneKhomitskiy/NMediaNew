@@ -1,9 +1,12 @@
 package ru.netology.nmedia.adapter
 
+import android.annotation.SuppressLint
+import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
+import androidx.annotation.RequiresApi
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -13,11 +16,18 @@ import ru.netology.nmedia.BuildConfig
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.CardAdBinding
 import ru.netology.nmedia.databinding.CardPostBinding
+import ru.netology.nmedia.databinding.CardTimeBinding
 import ru.netology.nmedia.dto.Ad
 import ru.netology.nmedia.dto.FeedItem
 import ru.netology.nmedia.dto.Post
+import ru.netology.nmedia.dto.Time
 import ru.netology.nmedia.enumeration.AttachmentType
 import ru.netology.nmedia.view.load
+import java.text.SimpleDateFormat
+import java.time.Clock
+import java.time.Instant
+import java.time.LocalDate
+import java.util.*
 
 private const val BASE_URL = BuildConfig.BASE_URL
 
@@ -30,6 +40,7 @@ interface OnInteractionListener {
     fun openImage(post: Post) {}
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 class FeedAdapter(
     private val onInteractionListener: OnInteractionListener,
 ) : PagingDataAdapter<FeedItem, RecyclerView.ViewHolder>(FeedItemDiffCallback()) {
@@ -38,6 +49,7 @@ class FeedAdapter(
         when (getItem(position)) {
             is Ad -> R.layout.card_ad
             is Post -> R.layout.card_post
+            is Time -> R.layout.card_time
             null -> error("unknown item type")
         }
 
@@ -47,9 +59,13 @@ class FeedAdapter(
                 val binding = CardPostBinding.inflate(LayoutInflater.from(parent.context), parent, false)
                 PostViewHolder(binding, onInteractionListener)
             }
-            R.layout.card_ad-> {
+            R.layout.card_ad -> {
                 val binding = CardAdBinding.inflate(LayoutInflater.from(parent.context), parent, false)
                 AdViewHolder(binding)
+            }
+            R.layout.card_time -> {
+                val binding = CardTimeBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                TimeViewHolder(binding)
             }
             else -> error("unknown view type $viewType")
         }
@@ -58,6 +74,8 @@ class FeedAdapter(
         when (val item = getItem(position)) {
             is Ad -> (holder as? AdViewHolder)?.bind(item)
             is Post -> (holder as? PostViewHolder)?.bind(item)
+            is Time -> (holder as? TimeViewHolder)?.bind(item)
+
             null -> error("unknown item type")
         }
     }
@@ -72,15 +90,26 @@ class AdViewHolder(
     }
 }
 
+class TimeViewHolder(
+    private val binding: CardTimeBinding
+) : RecyclerView.ViewHolder(binding.root) {
+
+    fun bind(time: Time) {
+        binding.string.text = time.timeStr
+    }
+}
+
 class PostViewHolder(
     private val binding: CardPostBinding,
     private val onInteractionListener: OnInteractionListener,
 ) : RecyclerView.ViewHolder(binding.root) {
 
+    @SuppressLint("SimpleDateFormat")
+    @RequiresApi(Build.VERSION_CODES.O)
     fun bind(post: Post) {
         binding.apply {
             author.text = post.author
-            published.text = post.published
+            published.text = Date.from(Instant.ofEpochSecond(post.published)).toString()
             content.text = post.content
             // в адаптере
             like.isChecked = post.likedByMe

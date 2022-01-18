@@ -32,4 +32,7 @@
     <string name="error_login">Invalid username/password</string>
     <string name="error_auth">You are not authorized</string>
     <string name="error_repeat_password">Password mismatch</string>
+    <string name="today">Today</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="last_week">Last week</string>
 </resources>

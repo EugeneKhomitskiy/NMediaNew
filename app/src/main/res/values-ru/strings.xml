@@ -33,4 +33,7 @@
     <string name="error_login">Неверный логин/пароль</string>
     <string name="error_auth">Вы не авторизованы</string>
     <string name="error_repeat_password">Пароли не совпадают</string>
+    <string name="today">Сегодня</string>
+    <string name="yesterday">Вчера</string>
+    <string name="last_week">На прошлой неделе</string>
 </resources>
