@@ -1,8 +1,6 @@
 package ru.netology.nmedia.viewmodel
 
 import android.net.Uri
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.core.net.toFile
 import androidx.lifecycle.*
 import androidx.paging.PagingData
@@ -41,7 +39,6 @@ private val empty = Post(
 
 private val noPhoto = PhotoModel()
 
-@RequiresApi(Build.VERSION_CODES.O)
 private val currentTime = OffsetDateTime.now().toEpochSecond()
 private const val TODAY = 86400
 private const val YESTERDAY = 172800
@@ -57,7 +54,6 @@ class PostViewModel @Inject constructor(
         .data
         .cachedIn(viewModelScope)
 
-    @RequiresApi(Build.VERSION_CODES.O)
     val data: Flow<PagingData<FeedItem>> = cached.map {
         it.insertSeparators { previous, next ->
             when {

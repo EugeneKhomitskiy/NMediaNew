@@ -1,12 +1,10 @@
 package ru.netology.nmedia.adapter
 
 import android.annotation.SuppressLint
-import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
-import androidx.annotation.RequiresApi
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -23,10 +21,7 @@ import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.dto.Time
 import ru.netology.nmedia.enumeration.AttachmentType
 import ru.netology.nmedia.view.load
-import java.text.SimpleDateFormat
-import java.time.Clock
 import java.time.Instant
-import java.time.LocalDate
 import java.util.*
 
 private const val BASE_URL = BuildConfig.BASE_URL
@@ -40,7 +35,6 @@ interface OnInteractionListener {
     fun openImage(post: Post) {}
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 class FeedAdapter(
     private val onInteractionListener: OnInteractionListener,
 ) : PagingDataAdapter<FeedItem, RecyclerView.ViewHolder>(FeedItemDiffCallback()) {
@@ -105,7 +99,6 @@ class PostViewHolder(
 ) : RecyclerView.ViewHolder(binding.root) {
 
     @SuppressLint("SimpleDateFormat")
-    @RequiresApi(Build.VERSION_CODES.O)
     fun bind(post: Post) {
         binding.apply {
             author.text = post.author
