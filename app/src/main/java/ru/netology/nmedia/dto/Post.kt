@@ -1,6 +1,7 @@
 package ru.netology.nmedia.dto
 
 import ru.netology.nmedia.enumeration.AttachmentType
+import ru.netology.nmedia.enumeration.PostTime
 
 sealed interface FeedItem {
     val id: Long
@@ -29,7 +30,7 @@ data class Ad(
 
 data class Time(
     override val id: Long,
-    val timeStr: String,
+    val timeStr: PostTime,
 ) : FeedItem
 
 data class Attachment(

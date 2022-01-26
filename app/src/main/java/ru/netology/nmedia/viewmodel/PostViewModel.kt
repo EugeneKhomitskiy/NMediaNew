@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.core.net.toFile
 import androidx.lifecycle.*
 import androidx.paging.PagingData
+import androidx.paging.TerminalSeparatorType
 import androidx.paging.cachedIn
 import androidx.paging.insertSeparators
 import androidx.work.*
@@ -13,6 +14,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.netology.nmedia.dto.*
+import ru.netology.nmedia.enumeration.PostTime
 import ru.netology.nmedia.enumeration.RetryType
 import ru.netology.nmedia.model.FeedModelState
 import ru.netology.nmedia.model.PhotoModel
@@ -43,6 +45,10 @@ private val currentTime = OffsetDateTime.now().toEpochSecond()
 private const val TODAY = 86400
 private const val YESTERDAY = 172800
 
+private const val TODAY_ID = 539802L
+private const val YESTERDAY_ID = 939384L
+private const val LAST_WEEK_ID = 892832L
+
 @ExperimentalCoroutinesApi
 @HiltViewModel
 class PostViewModel @Inject constructor(
@@ -55,23 +61,33 @@ class PostViewModel @Inject constructor(
         .cachedIn(viewModelScope)
 
     val data: Flow<PagingData<FeedItem>> = cached.map {
-        it.insertSeparators { previous, next ->
+        it.insertSeparators(TerminalSeparatorType.SOURCE_COMPLETE) { previous, next ->
+            val diff = currentTime - (next?.published ?: 0)
             when {
-                previous?.id?.rem(5) == 0L -> {
+                next == null -> null
+                previous == null -> {
+                    when {
+                        diff <= TODAY -> {
+                            Time(TODAY_ID, PostTime.TODAY)
+                        }
+                        diff < TODAY && diff <= YESTERDAY -> {
+                            Time(YESTERDAY_ID, PostTime.YESTERDAY)
+                        }
+                        else -> {
+                            Time(LAST_WEEK_ID, PostTime.LAST_WEEK)
+                        }
+                    }
+                }
+                diff in (TODAY + 1) until YESTERDAY -> {
+                    Time(YESTERDAY_ID, PostTime.YESTERDAY)
+                }
+                diff > YESTERDAY -> {
+                    Time(LAST_WEEK_ID, PostTime.LAST_WEEK)
+                }
+                previous.id.rem(5) == 0L -> {
                     Ad(Random.nextLong(), "figma.jpg")
                 }
-                currentTime - next?.published!! < TODAY -> {
-                    Time(Random.nextLong(), "Today")
-                }
-                currentTime - next.published in (TODAY + 1) until YESTERDAY -> {
-                    Time(Random.nextLong(), "Yesterday")
-                }
-                currentTime - next.published > YESTERDAY -> {
-                    Time(Random.nextLong(), "Last week")
-                }
-                else -> {
-                    null
-                }
+                else -> null
             }
         }
     }

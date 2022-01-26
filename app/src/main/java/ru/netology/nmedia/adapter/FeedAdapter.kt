@@ -20,6 +20,7 @@ import ru.netology.nmedia.dto.FeedItem
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.dto.Time
 import ru.netology.nmedia.enumeration.AttachmentType
+import ru.netology.nmedia.enumeration.PostTime
 import ru.netology.nmedia.view.load
 import java.time.Instant
 import java.util.*
@@ -89,7 +90,17 @@ class TimeViewHolder(
 ) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(time: Time) {
-        binding.string.text = time.timeStr
+        when (time.timeStr) {
+            PostTime.TODAY -> {
+                binding.string.setText(R.string.today)
+            }
+            PostTime.YESTERDAY -> {
+                binding.string.setText(R.string.yesterday)
+            }
+            PostTime.LAST_WEEK -> {
+                binding.string.setText(R.string.last_week)
+            }
+        }
     }
 }
 
