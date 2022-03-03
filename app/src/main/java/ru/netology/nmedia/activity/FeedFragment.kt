@@ -148,6 +148,7 @@ class FeedFragment : Fragment() {
 
         binding.fab.setOnClickListener {
             if (viewModelAuth.authenticated) {
+                viewModel.edit(Post.empty)
                 findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
             } else {
                 Toast.makeText(

@@ -21,7 +21,21 @@ data class Post(
     val attachment: Attachment?,
     val viewed: Boolean = true,
     val ownedByMe: Boolean = false
-) : FeedItem
+) : FeedItem {
+    companion object {
+        val empty = Post(
+            id = 0,
+            authorId = 0,
+            content = "",
+            authorAvatar = "",
+            author = "",
+            likedByMe = false,
+            likes = 0,
+            published = 0,
+            attachment = null
+        )
+    }
+}
 
 data class Ad(
     override val id: Long,
